@@ -55,6 +55,7 @@ class RedmineMerge
     WikiPages = {}
     Documents = {}
     Versions = {}
+    CustomFields = {}
 
     def self.add_user(source_id, new_id)
       Users[source_id] = new_id
@@ -118,6 +119,14 @@ class RedmineMerge
 
     def self.get_new_version_id(source_id)
       Versions[source_id]
+    end
+
+    def self.add_custom_field(source_id, new_id)
+      CustomFields[source_id] = new_id
+    end
+
+    def self.get_new_custom_field_id(source_id)
+      CustomFields[source_id]
     end
 
     def self.find_id_by_property(target_klass, source_id)
