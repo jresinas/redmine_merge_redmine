@@ -11,11 +11,12 @@ class SourceUser < ActiveRecord::Base
       elsif user = (User.find_by_mail(source_user.mail) || User.find_by_login(source_user.login)) 
         puts "-- Found"
       else
-        user = User.create!(source_user.attributes) do |u|
+        user = User.new(source_user.attributes) do |u|
           u.login = source_user.login
           u.admin = source_user.admin
           u.hashed_password = source_user.hashed_password
         end
+        user.save(false)
         puts "-- Not found, created"
       end
       puts "-- Added to map"

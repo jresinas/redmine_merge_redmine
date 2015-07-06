@@ -7,10 +7,11 @@ class SourceDocument < ActiveRecord::Base
   def self.migrate
     all.each do |source_document|
 
-      document = Document.create!(source_document.attributes) do |d|
+      document = Document.new(source_document.attributes) do |d|
         d.project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_document.project_id))
         d.category = DocumentCategory.find_by_name(source_document.category.name)
       end
+      document.save(false)
       
       RedmineMerge::Mapper.add_document(source_document.id, document.id)
     end

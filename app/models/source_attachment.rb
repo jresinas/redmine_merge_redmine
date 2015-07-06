@@ -7,7 +7,7 @@ class SourceAttachment < ActiveRecord::Base
   def self.migrate
     all.each do |source_attachment|
 
-      Attachment.create!(source_attachment.attributes) do |a|
+      attachment = Attachment.new(source_attachment.attributes) do |a|
         a.author = User.find(RedmineMerge::Mapper.get_new_user_id(source_attachment.author.id))
         a.container = case source_attachment.container_type
                       when "Issue"
@@ -23,6 +23,7 @@ class SourceAttachment < ActiveRecord::Base
                       end
 
       end
+      attachment.save(false)
     end
   end
 end

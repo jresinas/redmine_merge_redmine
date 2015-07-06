@@ -6,7 +6,8 @@ class SourceEnumeration < ActiveRecord::Base
     all(:conditions => {:type => "IssuePriority"}) .each do |source_issue_priority|
       next if IssuePriority.find_by_name(source_issue_priority.name)
 
-      IssuePriority.create!(source_issue_priority.attributes)
+      issue_priority = IssuePriority.new(source_issue_priority.attributes)
+      issue_priority.save(false)
     end
   end
 
@@ -14,7 +15,8 @@ class SourceEnumeration < ActiveRecord::Base
     all(:conditions => {:type => "TimeEntryActivity"}) .each do |source_activity|
       next if TimeEntryActivity.find_by_name(source_activity.name)
 
-      TimeEntryActivity.create!(source_activity.attributes)
+      time_entry_activity = TimeEntryActivity.new(source_activity.attributes)
+      time_entry_activity.save(false)
     end
   end
 
@@ -22,7 +24,8 @@ class SourceEnumeration < ActiveRecord::Base
     all(:conditions => {:type => "DocumentCategory"}) .each do |source_document_category|
       next if DocumentCategory.find_by_name(source_document_category.name)
 
-       DocumentCategory.create!(source_document_category.attributes)
+      document_category = DocumentCategory.new(source_document_category.attributes)
+      document_category.save(false)
     end
   end
 

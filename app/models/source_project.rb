@@ -11,7 +11,7 @@ class SourceProject < ActiveRecord::Base
       if project = (Project.find_by_name(source_project.name) || Project.find_by_identifier(source_project.identifier))
         puts "-- Found"
       else
-        project = Project.create!(source_project.attributes) do |p|
+        project = Project.new(source_project.attributes) do |p|
           p.status = source_project.status
           if source_project.enabled_modules
             p.enabled_module_names = source_project.enabled_modules.collect(&:name)
@@ -24,7 +24,7 @@ class SourceProject < ActiveRecord::Base
             end
           end
         end
-
+        project.save(false)
         # Parent/child projects
         if source_project.parent_id
           project.set_parent!(Project.find_by_id(RedmineMerge::Mapper.get_new_project_id(source_project.parent_id)))

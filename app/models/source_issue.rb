@@ -14,7 +14,7 @@ class SourceIssue < ActiveRecord::Base
   def self.migrate
     all.each do |source_issue|
       puts "- Migrating issue ##{source_issue.id}: #{source_issue.subject}"
-      issue = Issue.create!(source_issue.attributes) do |i|
+      issue = Issue.new(source_issue.attributes) do |i|
         i.project = Project.find_by_name(source_issue.project.name)
         puts "-- Set project #{i.project.name}"
         i.author = User.find(RedmineMerge::Mapper.get_new_user_id(source_issue.author.id))
@@ -36,6 +36,8 @@ class SourceIssue < ActiveRecord::Base
         end
       end
       
+      issue.save(false)
+
       RedmineMerge::Mapper.add_issue(source_issue.id, issue.id)
     end
   end
