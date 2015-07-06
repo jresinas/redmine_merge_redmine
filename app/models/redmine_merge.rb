@@ -28,6 +28,8 @@ class RedmineMerge
     SourceIssue.migrate
     puts 'Migrating issue relations...'
     SourceIssueRelation.migrate
+    puts "Migrating custom values..."
+    SourceCustomValue.migrate
     puts 'Migrating journals...'
     SourceJournal.migrate
     puts 'Migrating journal details...'
