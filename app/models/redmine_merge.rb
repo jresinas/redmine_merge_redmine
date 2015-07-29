@@ -49,6 +49,8 @@ class RedmineMerge
 
     puts 'Migrating enabled modules...'
     SourceEnabledModule.migrate
+    puts 'Migrating auth sources...'
+    SourceAuthSource.migrate
   end
 
   class Mapper
