@@ -46,6 +46,9 @@ class RedmineMerge
     SourceWikiContent.migrate
     puts 'Migrating attachments...'
     SourceAttachment.migrate
+
+    puts 'Migrating enabled modules...'
+    SourceEnabledModule.migrate
   end
 
   class Mapper
