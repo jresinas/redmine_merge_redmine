@@ -7,23 +7,23 @@ class SourceAttachment < ActiveRecord::Base
   def self.migrate
     all.each do |source_attachment|
 
-      attachment = Attachment.new(source_attachment.attributes) do |a|
+      Attachment.new(source_attachment.attributes) do |a|
         a.author = User.find(RedmineMerge::Mapper.get_new_user_id(source_attachment.author.id))
-        a.container = case source_attachment.container_type
+        case source_attachment.container_type
                       when "Issue"
-                        Issue.find RedmineMerge::Mapper.get_new_issue_id(source_attachment.container_id)
+                        a.container = Issue.find RedmineMerge::Mapper.get_new_issue_id(source_attachment.container_id)
                       when "Document"
-                        Document.find RedmineMerge::Mapper.get_new_document_id(source_attachment.container_id)
+                        a.container = Document.find RedmineMerge::Mapper.get_new_document_id(source_attachment.container_id)
                       when "WikiPage"
-                        WikiPage.find RedmineMerge::Mapper.get_new_wiki_page_id(source_attachment.container_id)
+                        a.container = WikiPage.find RedmineMerge::Mapper.get_new_wiki_page_id(source_attachment.container_id)
                       when "Project"
-                        Project.find RedmineMerge::Mapper.get_new_project_id(source_attachment.container_id)
+                        a.container = Project.find RedmineMerge::Mapper.get_new_project_id(source_attachment.container_id)
                       when "Version"
-                        Version.find RedmineMerge::Mapper.get_new_version_id(source_attachment.container_id)
+                        a.container = Version.find RedmineMerge::Mapper.get_new_version_id(source_attachment.container_id)
                       end
 
+        a.save(false)
       end
-      attachment.save(false)
     end
   end
 end
