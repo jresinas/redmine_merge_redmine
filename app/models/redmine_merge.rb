@@ -53,6 +53,10 @@ class RedmineMerge
     SourceAuthSource.migrate
     puts 'Migrating roles...'
     SourceRole.migrate
+    puts 'Migrating members...'
+    SourceMember.migrate
+    puts 'Migrating member roles...'
+    SourceMemberRole.migrate
   end
 
   class Mapper
@@ -66,6 +70,8 @@ class RedmineMerge
     Versions = {}
     CustomFields = {}
     Roles = {}
+    Members = {}
+    MemberRoles = {}
 
     def self.add_user(source_id, new_id)
       Users[source_id] = new_id
@@ -145,6 +151,22 @@ class RedmineMerge
 
     def self.get_new_role_id(source_id)
       Roles[source_id]
+    end
+
+    def self.add_member(source_id, new_id)
+      Members[source_id] = new_id
+    end
+
+    def self.get_new_member_id(source_id)
+      Members[source_id]
+    end
+
+    def self.add_member_role(source_id, new_id)
+      MemberRoles[source_id] = new_id
+    end
+
+    def self.get_new_member_role_id(source_id)
+      MemberRoles[source_id]
     end
 
 

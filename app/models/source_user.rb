@@ -2,6 +2,8 @@ class SourceUser < ActiveRecord::Base
   include SecondDatabase
   set_table_name :users
 
+  has_many :members
+
   def self.migrate
     all.each do |source_user|
       puts "- Migrating user #{source_user}..."
