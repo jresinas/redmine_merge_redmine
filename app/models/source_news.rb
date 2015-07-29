@@ -6,10 +6,17 @@ class SourceNews < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_news|
-      News.create!(source_news.attributes) do |n|
-        n.project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_news.project_id))
-        n.author = User.find(RedmineMerge::Mapper.get_new_user_id(source_news.author.id))
+      puts source_news.attributes.inspect
+      vnew = News.new(source_news.attributes) do |n|
+        map_prj = RedmineMerge::Mapper.get_new_project_id(source_news.project_id)
+        map_usr = RedmineMerge::Mapper.get_new_user_id(source_news.author.id)
+
+        if map_prj.present? and map_usr.present?
+          n.project = Project.find(map_prj)
+          n.author = User.find(map_usr)
+        end
       end
+      vnew.save(false)
     end
   end
 end
