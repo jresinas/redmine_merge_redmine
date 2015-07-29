@@ -51,6 +51,8 @@ class RedmineMerge
     SourceEnabledModule.migrate
     puts 'Migrating auth sources...'
     SourceAuthSource.migrate
+    puts 'Migrating roles...'
+    SourceRole.migrate
   end
 
   class Mapper
@@ -63,6 +65,7 @@ class RedmineMerge
     Documents = {}
     Versions = {}
     CustomFields = {}
+    Roles = {}
 
     def self.add_user(source_id, new_id)
       Users[source_id] = new_id
@@ -135,6 +138,15 @@ class RedmineMerge
     def self.get_new_custom_field_id(source_id)
       CustomFields[source_id]
     end
+
+    def self.add_role(source_id, new_id)
+      Roles[source_id] = new_id
+    end
+
+    def self.get_new_role_id(source_id)
+      Roles[source_id]
+    end
+
 
     def self.find_id_by_property(target_klass, source_id)
       # Similar to issues_helper.rb#show_detail
