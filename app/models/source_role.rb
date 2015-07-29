@@ -7,7 +7,7 @@ class SourceRole < ActiveRecord::Base
       target_role = Role.find_by_name(source_role.name)
 
       if !target_role.present?
-      	target_custom_field = Role.create!(source_role.attributes)
+      	target_role = Role.create!(source_role.attributes)
   	  end
       
       RedmineMerge::Mapper.add_role(source_role.id, target_role.id)
