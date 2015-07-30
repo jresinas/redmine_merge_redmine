@@ -3,6 +3,7 @@ class SourceUser < ActiveRecord::Base
   set_table_name :users
 
   has_many :members
+  has_one :preference, :class_name => 'UserPreference'
 
   def self.migrate
     all.each do |source_user|
