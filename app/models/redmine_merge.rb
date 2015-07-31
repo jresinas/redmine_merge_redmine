@@ -61,6 +61,8 @@ class RedmineMerge
     SourceUserPreference.migrate
     puts 'Migrating queries...'
     SourceQuery.migrate
+    puts 'Migrating watchers..'
+    SourceWatcher.migrate
   end
 
   class Mapper
@@ -76,6 +78,7 @@ class RedmineMerge
     Roles = {}
     Members = {}
     MemberRoles = {}
+    News = {}
 
     def self.add_user(source_id, new_id)
       Users[source_id] = new_id
@@ -173,6 +176,13 @@ class RedmineMerge
       MemberRoles[source_id]
     end
 
+    def self.add_news(source_id, new_id)
+      News[source_id] = new_id
+    end
+
+    def self.get_new_news_id(source_id)
+      News[source_id]
+    end
 
     def self.find_id_by_property(target_klass, source_id)
       # Similar to issues_helper.rb#show_detail

@@ -7,7 +7,7 @@ class SourceNews < ActiveRecord::Base
   def self.migrate
     all.each do |source_news|
       puts source_news.attributes.inspect
-      vnew = News.new(source_news.attributes) do |n|
+      target_news = News.new(source_news.attributes) do |n|
         map_prj = RedmineMerge::Mapper.get_new_project_id(source_news.project_id)
         map_usr = RedmineMerge::Mapper.get_new_user_id(source_news.author.id)
 
@@ -16,7 +16,8 @@ class SourceNews < ActiveRecord::Base
           n.author = User.find(map_usr)
         end
       end
-      vnew.save(false)
+      target_news.save(false)
+      RedmineMerge::Mapper.add_news(source_news.id, target_news.id)
     end
   end
 end
