@@ -4,7 +4,7 @@ class SourceAuthSource < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_auth_source|
-      target_auth_source = CustomField.find_by_name(source_auth_source.name)
+      target_auth_source = AuthSource.find_by_name(source_auth_source.name)
 
       if !target_auth_source.present?
         AuthSource.create!(source_auth_source.attributes) do |as|
