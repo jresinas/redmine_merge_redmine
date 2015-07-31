@@ -59,6 +59,8 @@ class RedmineMerge
     SourceMemberRole.migrate
     puts 'Migrating user preferences...'
     SourceUserPreference.migrate
+    puts 'Migrating queries...'
+    SourceQuery.migrate
   end
 
   class Mapper
