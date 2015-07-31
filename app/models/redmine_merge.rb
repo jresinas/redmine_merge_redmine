@@ -63,6 +63,8 @@ class RedmineMerge
     SourceQuery.migrate
     puts 'Migrating watchers..'
     SourceWatcher.migrate
+    puts 'Migrating workflows..'
+    SourceWorkflow.migrate
   end
 
   class Mapper
@@ -79,6 +81,8 @@ class RedmineMerge
     Members = {}
     MemberRoles = {}
     News = {}
+    IssueStatuses = {}
+    Trackers = {}
 
     def self.add_user(source_id, new_id)
       Users[source_id] = new_id
@@ -183,6 +187,23 @@ class RedmineMerge
     def self.get_new_news_id(source_id)
       News[source_id]
     end
+
+    def self.add_issue_status(source_id, new_id)
+      IssueStatuses[source_id] = new_id
+    end
+
+    def self.get_new_issue_status_id(source_id)
+      IssueStatuses[source_id]
+    end
+
+    def self.add_tracker(source_id, new_id)
+      Trackers[source_id] = new_id
+    end
+
+    def self.get_new_tracker_id(source_id)
+      Trackers[source_id]
+    end
+
 
     def self.find_id_by_property(target_klass, source_id)
       # Similar to issues_helper.rb#show_detail
