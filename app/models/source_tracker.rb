@@ -7,12 +7,12 @@ class SourceTracker < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_tracker|
-	  target_tracker = Tracker.find_by_name(source_tracker.name)
-			
-	  if !target_tracker.present?
-	    target_tracker = Tracker.create!(source_tracker.attributes)
-      RedmineMerge::Mapper.add_tracker(source_tracker.id, target_tracker.id)
-	  end
+  	  target_tracker = Tracker.find_by_name(source_tracker.name)
+  			
+  	  if !target_tracker.present?
+  	    target_tracker = Tracker.create!(source_tracker.attributes)
+        RedmineMerge::Mapper.add_tracker(source_tracker.id, target_tracker.id)
+  	  end
 
       migrate_custom_fields(source_tracker, target_tracker)
     end
