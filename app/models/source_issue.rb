@@ -35,8 +35,14 @@ class SourceIssue < ActiveRecord::Base
           puts "-- Set fixed version #{i.fixed_version}"
         end
       end
-      
-      issue.save(false)
+
+      # Al inicializar una petición, si tiene una categoria con un usuario asignado, automaticamente la inicializa asignada a ese usuario
+      if issue.assigned_to == nil
+        issue.save(false)
+        issue.update_attribute('assigned_to', nil)
+      else
+        issue.save(false)
+      end
 
       RedmineMerge::Mapper.add_issue(source_issue.id, issue.id)
     end

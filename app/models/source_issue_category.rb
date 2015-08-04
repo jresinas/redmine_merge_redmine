@@ -14,7 +14,7 @@ class SourceIssueCategory < ActiveRecord::Base
 
         map_ic = RedmineMerge::Mapper.get_new_user_id(source_issue_category.assigned_to_id)
         if map_ic.present?
-          ic.assigned_to_id = User.find(map_ic)
+          ic.assigned_to_id = map_ic
         end
       end
     end
