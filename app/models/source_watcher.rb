@@ -1,7 +1,7 @@
 class SourceWatcher < ActiveRecord::Base
   include SecondDatabase
   set_table_name :watchers
-  belongs_to :user
+  belongs_to :user, :class_name => 'SourceUser'
 
   def self.migrate
     all.each do |source_watcher|

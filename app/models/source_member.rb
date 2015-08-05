@@ -2,8 +2,8 @@ class SourceMember < ActiveRecord::Base
   include SecondDatabase
   set_table_name :members
 
-  belongs_to :user
-  belongs_to :project
+  belongs_to :user, :class_name => 'SourceUser'
+  belongs_to :project, :class_name => 'SourceProject'
 
   def self.migrate
     all.each do |source_member|

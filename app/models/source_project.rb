@@ -5,7 +5,7 @@ class SourceProject < ActiveRecord::Base
   has_many :enabled_modules, :class_name => 'SourceEnabledModule', :foreign_key => 'project_id'
   has_and_belongs_to_many :trackers, :class_name => 'SourceTracker', :join_table => 'projects_trackers', :foreign_key => 'project_id', :association_foreign_key => 'tracker_id'
   has_and_belongs_to_many :issue_custom_fields, :class_name => 'SourceCustomField', :join_table => "custom_fields_projects", :foreign_key => 'project_id', :association_foreign_key => 'custom_field_id'
-  has_many :members
+  has_many :members, :class_name => 'SourceMember'
   
   def self.migrate
     all(:order => 'lft ASC').each do |source_project|

@@ -2,7 +2,7 @@ class SourceUserPreference < ActiveRecord::Base
   include SecondDatabase
   set_table_name :user_preferences
 
-  belongs_to :user
+  belongs_to :user, :class_name => 'SourceUser'
 
   def self.migrate
     all.each do |source_user_preference|

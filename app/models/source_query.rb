@@ -2,8 +2,8 @@ class SourceQuery < ActiveRecord::Base
   include SecondDatabase
   set_table_name :queries
 
-  belongs_to :project
-  belongs_to :user
+  belongs_to :project, :class_name => 'SourceProject'
+  belongs_to :user, :class_name => 'SourceUser'
 
   def self.migrate
     all.each do |source_query|
