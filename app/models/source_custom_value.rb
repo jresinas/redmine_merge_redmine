@@ -22,6 +22,8 @@ class SourceCustomValue < ActiveRecord::Base
                         cv.customized = Version.find RedmineMerge::Mapper.get_new_version_id(source_custom_value.customized_id)
                       when "News"
                         cv.customized = News.find RedmineMerge::Mapper.get_new_news_id(source_custom_value.customized_id)
+                      when "Principal"
+                        cv.customized = User.find RedmineMerge::Mapper.get_new_user_id(source_custom_value.customized_id)
                       end
         cv.save
       end
