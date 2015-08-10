@@ -28,6 +28,7 @@ class RedmineMerge
     SourceIssueCategory.migrate
     puts 'Migrating issues...'
     SourceIssue.migrate
+    SourceIssue.migrate_tree
     puts 'Migrating issue relations...'
     SourceIssueRelation.migrate
     puts "Migrating custom values..."

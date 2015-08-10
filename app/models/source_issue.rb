@@ -47,4 +47,15 @@ class SourceIssue < ActiveRecord::Base
       RedmineMerge::Mapper.add_issue(source_issue.id, issue.id)
     end
   end
+
+  def self.migrate_tree
+    all.each do |source_issue|
+      target_issue = Issue.find(RedmineMerge::Mapper.get_new_issue_id(source_issue.id))
+
+      target_issue[:parent_id] = RedmineMerge::Mapper.get_new_issue_id(source_issue.parent_id) if source_issue.parent_id.present?
+      target_issue[:lft] = source_issue.lft
+      target_issue[:rgt] = source_issue.rgt
+      target_issue.update_attribute('root_id', RedmineMerge::Mapper.get_new_issue_id(source_issue.root_id))
+    end
+  end
 end
