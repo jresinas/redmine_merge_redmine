@@ -22,6 +22,8 @@ class RedmineMerge
     SourceVersion.migrate
     puts 'Migrating news...'
     SourceNews.migrate
+    puts 'Migrating comments...'
+    SourceComment.migrate
     puts 'Migrating issue categories...'
     SourceIssueCategory.migrate
     puts 'Migrating issues...'
