@@ -5,7 +5,7 @@ class SourceWatcher < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_watcher|
-      Watcher.create!(source_watcher.attributes) do |w|
+      target_watcher = Watcher.new(source_watcher.attributes) do |w|
         w.user_id = RedmineMerge::Mapper.get_new_user_id(source_watcher.user_id)
         case source_watcher.watchable_type
           when 'Issue'
@@ -18,6 +18,7 @@ class SourceWatcher < ActiveRecord::Base
             w.watchable_id = RedmineMerge::Mapper.get_new_wiki_page_id(source_watcher.watchable_id)
         end
       end
+      target_watcher.save
     end
   end
 end
