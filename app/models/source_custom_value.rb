@@ -8,7 +8,7 @@ class SourceCustomValue < ActiveRecord::Base
   def self.migrate
     all.each do |source_custom_value|
       CustomValue.new(source_custom_value.attributes) do |cv|
-        cv.custom_field = CustomField.find_by_name(source_custom_value.custom_field.name)
+        cv.custom_field = CustomField.find(RedmineMerge::Mapper.get_new_custom_field_id(source_custom_value.custom_field.id))
         case source_custom_value.customized_type
                       when "Issue"
                         cv.customized = Issue.find RedmineMerge::Mapper.get_new_issue_id(source_custom_value.customized_id)
