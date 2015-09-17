@@ -6,14 +6,19 @@ class SourceDocument < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_document|
+      puts "- Migrating document ##{source_document.id}: #{source_document.title}"
+      attributes = RedmineMerge::Utils.hash_attributes_adapter("Document",source_document.attributes)
 
-      document = Document.new(source_document.attributes) do |d|
+      target_document = Document.new(attributes) do |d|
         d.project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_document.project_id))
-        d.category = DocumentCategory.find_by_name(source_document.category.name)
+
+        if source_document.category_id.present?
+          d.category = DocumentCategory.find(RedmineMerge::Mapper.get_new_enumeration_id(source_document.category.id))
+        end
       end
-      document.save(false)
-      
-      RedmineMerge::Mapper.add_document(source_document.id, document.id)
+
+      target_document.save(false)
+      RedmineMerge::Mapper.add_document(source_document.id, target_document.id)
     end
   end
 end

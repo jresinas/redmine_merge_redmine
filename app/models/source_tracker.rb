@@ -7,19 +7,23 @@ class SourceTracker < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_tracker|
-  	  target_tracker = Tracker.find_by_name(source_tracker.name)
+      puts "- Migrating tracker ##{source_tracker.id}: #{source_tracker.name}"
+      source_tracker.name = RedmineMerge::Merger.check_element_to_rename('tracker', source_tracker.name)
+      target_tracker = RedmineMerge::Merger.get_tracker_to_merge(source_tracker)
   			
   	  if !target_tracker.present?
-  	    target_tracker = Tracker.create!(source_tracker.attributes)
-        RedmineMerge::Mapper.add_tracker(source_tracker.id, target_tracker.id)
+        attributes = RedmineMerge::Utils.hash_attributes_adapter("Tracker",source_tracker.attributes)
+  	    target_tracker = Tracker.create!(attributes)
   	  end
 
+      RedmineMerge::Mapper.add_tracker(source_tracker.id, target_tracker.id)
       migrate_custom_fields(source_tracker, target_tracker)
     end
   end
 
+  # Migración de los campos personalizados del tipo de petición
   def self.migrate_custom_fields(source_tracker, target_tracker)
-  	puts "migrate custom fields"
+  	puts "-- migrate custom fields"
     Array(source_tracker.custom_fields).each do |source_custom_field|
       target_custom_field = CustomField.find(RedmineMerge::Mapper.get_new_custom_field_id(source_custom_field.id))
       if target_custom_field.nil?

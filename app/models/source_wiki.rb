@@ -4,10 +4,11 @@ class SourceWiki < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_wiki|
-      puts "- Migrating source wiki ID: #{source_wiki.id}..."
+      puts "- Migrating source wiki #{source_wiki.id}"
       project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_wiki.project_id))
 
-      wiki = Wiki.create!(source_wiki.attributes) do |w|
+      attributes = RedmineMerge::Utils.hash_attributes_adapter("Wiki",source_wiki.attributes)
+      wiki = Wiki.create!(attributes) do |w|
         w.project = project
       end
 

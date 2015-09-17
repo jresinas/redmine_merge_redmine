@@ -6,15 +6,21 @@ class SourceComment < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_comment|
-      Comment.new(source_comment.attributes) do |c|
-        c.author_id = RedmineMerge::Mapper.get_new_user_id(source_comment.author_id)
+      puts "- Migrating comment ##{source_comment.id}"
+      attributes = RedmineMerge::Utils.hash_attributes_adapter("Comment",source_comment.attributes)
 
+      target_comment = Comment.new(attributes) do |c|
+        c.author_id = RedmineMerge::Mapper.get_new_user_id(source_comment.author_id)
+        
         case source_comment.commented_type
           when "News"
-            c.commented_id = RedmineMerge::Mapper.get_new_news_id(source_comment.commented_id)
+            if source_comment.commented_id.present?
+              c.commented_id = RedmineMerge::Mapper.get_new_news_id(source_comment.commented_id)
+            end
         end
-        c.save
       end
+
+      target_comment.save(false)
     end
   end
 end

@@ -8,16 +8,18 @@ class SourceWorkflow < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_workflow|
+      puts "- Migrating workflow ##{source_workflow.id}"
 
-      target_workflow = Workflow.new(source_workflow.attributes) do |wf|
-        wf.author = RedmineMerge::Mapper.get_new_user_id(source_workflow.author) if source_workflow.author.present?
-        wf.assignee = RedmineMerge::Mapper.get_new_user_id(source_workflow.assignee) if source_workflow.assignee.present?
+      attributes = RedmineMerge::Utils.hash_attributes_adapter("Workflow",source_workflow.attributes)
+      target_workflow = Workflow.new(attributes) do |wf|
         wf.tracker_id = RedmineMerge::Mapper.get_new_tracker_id(source_workflow.tracker_id)
         wf.old_status_id = RedmineMerge::Mapper.get_new_issue_status_id(source_workflow.old_status_id)
         wf.new_status_id = RedmineMerge::Mapper.get_new_issue_status_id(source_workflow.new_status_id)
         wf.role_id = RedmineMerge::Mapper.get_new_role_id(source_workflow.role_id)
 
-        wf.save
+        if wf.tracker_id.present? and wf.old_status_id.present? and wf.new_status_id.present? and wf.role_id.present?
+          wf.save
+        end
       end
     end
   end

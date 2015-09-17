@@ -9,11 +9,14 @@ class SourceProject < ActiveRecord::Base
   
   def self.migrate
     all(:order => 'lft ASC').each do |source_project|
-      puts "- Migrating source project #{source_project.name}..."
-      if target_project = (Project.find_by_name(source_project.name) || Project.find_by_identifier(source_project.identifier))
+      puts "- Migrating source project ##{source_project.id}: #{source_project.name}..."
+
+      if target_project = RedmineMerge::Merger.get_project_to_merge(source_project)
         puts "-- Found"
       else
-        target_project = Project.new(source_project.attributes) do |p|
+        trackers = []
+        attributes = RedmineMerge::Utils.hash_attributes_adapter("Project",source_project.attributes)
+        target_project = Project.new(attributes) do |p|
           p.status = source_project.status
           if source_project.enabled_modules
             p.enabled_module_names = source_project.enabled_modules.collect(&:name)
@@ -21,25 +24,25 @@ class SourceProject < ActiveRecord::Base
 
           if source_project.trackers
             source_project.trackers.each do |source_tracker|
-              merged_tracker = Tracker.find_by_name(source_tracker.name)
-              p.trackers << merged_tracker if merged_tracker and not p.trackers.include?(merged_tracker)
+              merged_tracker = Tracker.find(RedmineMerge::Mapper.get_new_tracker_id(source_tracker.id))
+              trackers << merged_tracker if merged_tracker and not trackers.include?(merged_tracker)
             end
           end
         end
+        target_project.trackers = trackers
         target_project.save(false)
-        # Parent/child projects
-        if source_project.parent_id
-          target_project.set_parent!(Project.find_by_id(RedmineMerge::Mapper.get_new_project_id(source_project.parent_id)))
-        end
+
         puts "-- Not found, created"
       end
-      puts "-- Added to map"
+
       RedmineMerge::Mapper.add_project(source_project.id, target_project.id)
+      puts "-- Added to map"
 
       migrate_custom_fields(source_project, target_project)
     end
   end
 
+  # Migración de los campos personalizados del proyecto
   def self.migrate_custom_fields(source_project, target_project)
     puts "migrate custom fields"
     Array(source_project.issue_custom_fields).each do |source_custom_field|
@@ -56,5 +59,19 @@ class SourceProject < ActiveRecord::Base
       target_project.issue_custom_fields << target_custom_field
     end
     target_project.save
+  end
+
+  # Migración de las relaciones entre proyectos
+  def self.migrate_tree
+    Project.record_timestamps = false
+    all.each do |source_project|
+      puts "- Migrating project tree ##{source_project.id}: #{source_project.name}"
+      target_project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_project.id))
+
+      target_project.set_parent!(Project.find(RedmineMerge::Mapper.get_new_project_id(source_project.parent_id))) if source_project.parent_id.present?
+
+      target_project.save(false)
+    end
+    Project.record_timestamps = true
   end
 end

@@ -4,10 +4,13 @@ class SourceRole < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_role|
-      target_role = Role.find_by_name(source_role.name)
+      puts "- Migrating role ##{source_role.id}: #{source_role.name}"
+
+      target_role = RedmineMerge::Merger.get_role_to_merge(source_role)
 
       if !target_role.present?
-      	target_role = Role.create!(source_role.attributes)
+        attributes = RedmineMerge::Utils.hash_attributes_adapter("Role",source_role.attributes)
+      	target_role = Role.create!(attributes)
   	  end
       
       RedmineMerge::Mapper.add_role(source_role.id, target_role.id)

@@ -8,16 +8,24 @@ class SourceCustomField < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_custom_field|
-      target_custom_field = CustomField.find_by_name(source_custom_field.name)
+      puts "- Migrating custom field ##{source_custom_field.id}: #{source_custom_field.name}"
+      # Si la clase del tipo de campo personalizado no existe en el código del destino, se salta la migración del campo
+      if RedmineMerge::Utils.class_exists?(source_custom_field.type)
+        source_custom_field.name = RedmineMerge::Merger.check_element_to_rename('custom_field', source_custom_field.name)
+        target_custom_field = RedmineMerge::Merger.get_custom_field_to_merge(source_custom_field)
 
-      if !target_custom_field.present? or target_custom_field.type != source_custom_field.type
-      	target_custom_field = CustomField.create!(source_custom_field.attributes) do |cf|
-          # Type must be set explicitly -- not included in the attributes
-          cf.type = source_custom_field.type
-  	    end
-  	  end
-      
-      RedmineMerge::Mapper.add_custom_field(source_custom_field.id, target_custom_field.id)
+        if !target_custom_field.present? or target_custom_field.type != source_custom_field.type
+          attributes = RedmineMerge::Utils.hash_attributes_adapter("CustomField",source_custom_field.attributes)
+        	target_custom_field = CustomField.create!(attributes) do |cf|
+            # Type must be set explicitly -- not included in the attributes
+            cf.type = source_custom_field.type
+    	    end
+    	  end
+        
+        RedmineMerge::Mapper.add_custom_field(source_custom_field.id, target_custom_field.id)
+      else
+        puts "Custom field type not found"
+      end
     end
   end
 end

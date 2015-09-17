@@ -10,14 +10,18 @@ class SourceTimeEntry < ActiveRecord::Base
 
   def self.migrate
     all.each do |source_time_entry|
-      time_entry = TimeEntry.new(source_time_entry.attributes) do |te|
+      puts "- Migrating time entry ##{source_time_entry.id} for issue ##{source_time_entry.issue_id} "
+
+      attributes = RedmineMerge::Utils.hash_attributes_adapter("TimeEntry",source_time_entry.attributes)
+      time_entry = TimeEntry.new(attributes) do |te|
         te.user = User.find(RedmineMerge::Mapper.get_new_user_id(source_time_entry.user.id))
-        te.project = Project.find_by_name(source_time_entry.project.name)
-        te.activity = TimeEntryActivity.find_by_name(source_time_entry.activity.name)
+        te.project = Project.find(RedmineMerge::Mapper.get_new_project_id(source_time_entry.project_id))
+        te.activity = TimeEntryActivity.find(RedmineMerge::Mapper.get_new_enumeration_id(source_time_entry.activity.id))
 
         # optional 
-        te.issue = Issue.find_by_id(RedmineMerge::Mapper.get_new_issue_id(source_time_entry.issue.id)) if source_time_entry.issue_id
+        te.issue = Issue.find(RedmineMerge::Mapper.get_new_issue_id(source_time_entry.issue.id)) if source_time_entry.issue_id
       end
+      
       time_entry.save(false)
     end
   end
